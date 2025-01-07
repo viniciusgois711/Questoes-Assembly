@@ -15,13 +15,14 @@ main:
 	
 	
 	addi $12 $0 16 # Tamanho de quadrados da Linha
-	addi $13 $0 15 # Tamanho de linhas
-	addi $14 $0 16 #tamanho bordas
-	j pintarLinha
+	addi $13 $0 16 # Tamanho de linhas
+	addi $14 $0 15 # validador das bordas
+	
+	addi $8 $8 -3584 # Para começar na primeira linha
 	
 	
 pintarTela:
-	beq $13 $0 linhaCimaBorda
+	beq $13 $0 sair
 	addi $13 $13 -1
 	addi $12 $12 16
 	addi $8 $8 3584
@@ -35,7 +36,7 @@ pintarLinha:
 
 
 quadrado:
-	beq $10 $0 pintarLinha
+	beq $10 $0 lateral
 	sw $11, 0($8)       # 1
 	sw $11, 512($8)     # 2
 	sw $11, 1024($8)    # 3
@@ -46,22 +47,24 @@ quadrado:
 	sw $11, 3584($8)    # 8
 	addi $8 $8 4
 	addi $10 $10 -1
+	
 	j quadrado
 
-linhaCimaBorda:
-	lui $8, 0x1001
-	addi $12 $0 16
-	j pintarLinhaBorda
-	
-	
-pintarLinhaBorda:	
-	beq $12 $0 sair
-	addi $10 $0 8
-	addi $12 $12 -1
-	j quadradoBorda
+lateral:
+	beq $13 $14 teste #Se for a primeira linha, pinta de cor diferente
+	beq $13 $0 teste #Se for ultima linha, pinta de cor diferente
+	beq $12 $14 teste # se for a primeira coluna, pinta de cor diferente
+	beq $12 $0 teste
+	j pintarLinha
 
-quadradoBorda:
-	beq $10 $0 pintarLinhaBorda
+teste:
+	addi $10 $10 8
+	addi $8 $8 -32
+	j lateral2
+	
+lateral2:
+
+	beq $10 $0 pintarLinha
 	sw $9, 0($8)       # 1
 	sw $9, 512($8)     # 2
 	sw $9, 1024($8)    # 3
@@ -72,8 +75,8 @@ quadradoBorda:
 	sw $9, 3584($8)    # 8
 	addi $8 $8 4
 	addi $10 $10 -1
-	add $21 $0 $8
-	j quadradoBorda
+	
+	j lateral2
 
 
 sair: 	addi $2 $0 10
