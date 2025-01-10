@@ -78,22 +78,32 @@ lateral:
 	beq $13 $0 teste #Se for ultima linha, pinta de cor diferente
 	beq $12 $14 teste # se for a primeira coluna, pinta de cor diferente
 	beq $12 $0 teste
-	beq $13 $15 talvezObstaculo
-	addi $17 $17 -3
+	addi $17 $0 12
 	beq $13 $17 talvezObstaculo
-	addi $17 $17 -3
+	addi $17 $0 11
 	beq $13 $17 talvezObstaculo
-	addi $17 $17 -3
+	addi $17 $0 8
+	beq $13 $17 talvezObstaculo
+	addi $17 $0 7
+	beq $13 $17 talvezObstaculo
+	addi $17 $0 4
+	beq $13 $17 talvezObstaculo
+	addi $17 $0 3
 	beq $13 $17 talvezObstaculo
 	j pintarLinha
 
 talvezObstaculo:
+	addi $16 $0 12
 	beq $12 $15 teste
-	addi $16 $15 -3
+	addi $16 $0 11
 	beq $12 $16 teste
-	addi $16 $16 -3
+	addi $16 $0 8
 	beq $12 $16 teste
-	addi $16 $16 -3
+	addi $16 $0 7
+	beq $12 $16 teste
+	addi $16 $0 4
+	beq $12 $16 teste
+	addi $16 $0 3
 	beq $12 $16 teste
 	j pintarLinha
 
