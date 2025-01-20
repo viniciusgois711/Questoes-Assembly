@@ -155,10 +155,19 @@ principal:
 	
 	jal andarDireita
 	
+	# quantos blocos o boneco vai andar
+	addi $15 $0 4
+	
+	jal andarEsquerda
+	
+	
 	j sair
 
 andarDireita:
+
+	# guardar endereço
 	add $16 $0 $31
+	
 	# adiciona um bloco para a direita ao endereço do boneco
 	addi $8 $8 32
 	
@@ -171,6 +180,45 @@ andarDireita:
 	# o bloco anterior ao que o boneco está atualmente, serve para apagar o boneco
 	add $14 $8 -32
 	
+	jal apagarRastro
+	
+	# recuperar o endereço $31
+	add $31 $0 $16
+	
+	# se ainda nao estiver chegado em 0, ele continua o laço
+	bne $15 $0 andarDireita
+	
+	jr $31
+
+andarEsquerda:
+
+	# guardar endereço
+	add $16 $0 $31
+	
+	# adiciona um bloco para a esquerda ao endereço do boneco
+	addi $8 $8 -32
+	
+	# chama a função de desenhar boneco com o endereço novo
+	jal desenharBoneco
+	
+	# recuperar o endereço $31
+	add $31 $0 $16
+	
+	# o bloco anterior ao que o boneco está atualmente, serve para apagar o boneco
+	add $14 $8 32
+	
+	jal apagarRastro
+	
+	# recuperar o endereço $31
+	add $31 $0 $16
+	
+	# se ainda nao estiver chegado em 0, ele continua o laço
+	bne $15 $0 andarEsquerda
+	
+	jr $31
+
+apagarRastro:
+	add $17 $0 $31
 	# quantidade de bloquinhos na vertical,
 	addi $11 $0 8
 	laco_apagar_rastro_1:
@@ -206,13 +254,10 @@ andarDireita:
 	
 	jal timer
 	# recuperar o endereço $31
-	add $31 $0 $16
-	
-	# se ainda nao estiver chegado em 0, ele continua o laço
-	bne $15 $0 andarDireita
+	add $31 $0 $17
 	
 	jr $31
-
+	
 desenharBoneco: 	
 	# preto boneco
 	add $24 $8 $0
