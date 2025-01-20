@@ -147,15 +147,26 @@ principal:
 	lui $8 0x1001
 	# chama função de desenhar o boneco
 	jal desenharBoneco
+	
+	jal timer
+	
 	# quantos blocos o boneco vai andar
-	addi $10 $0 5
+	addi $15 $0 5
+	
+	jal andarDireita
+	
+	j sair
 
 andarDireita:
+	add $16 $0 $31
 	# adiciona um bloco para a direita ao endereço do boneco
 	addi $8 $8 32
 	
 	# chama a função de desenhar boneco com o endereço novo
 	jal desenharBoneco
+	
+	# recuperar o endereço $31
+	add $31 $0 $16
 	
 	# o bloco anterior ao que o boneco está atualmente, serve para apagar o boneco
 	add $14 $8 -32
@@ -191,18 +202,18 @@ andarDireita:
 		
 	fim_laco_apagar_rastro_1:
 	# diminui a quantidade de espaços a serem percorridos
-	addi $10 $10 -1
+	addi $15 $15 -1
+	
+	jal timer
+	# recuperar o endereço $31
+	add $31 $0 $16
+	
 	# se ainda nao estiver chegado em 0, ele continua o laço
-	bne $10 $0 andarDireita
+	bne $15 $0 andarDireita
 	
-	# encerra
-	addi $2 $0 10
-	syscall
-	
-	
+	jr $31
 
 desenharBoneco: 	
-
 	# preto boneco
 	add $24 $8 $0
 	lui $9, 0x0000
@@ -264,6 +275,20 @@ desenharBoneco:
 	
 	jr $31
 	
+
+timer: 
+	sw $16, 0($29)
+       addi $29, $29, -4
+       addi $16, $0, 50000
+forT:  beq $16, $0, fimT
+       nop
+       nop
+       addi $16, $16, -1      
+       j forT                  
+fimT:  addi $29, $29, 4                                                    
+       lw $16, 0($29)          
+       jr $31
+
 sair:
 	addi $2 $0 10
 	syscall
