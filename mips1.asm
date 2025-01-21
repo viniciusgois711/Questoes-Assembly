@@ -151,7 +151,7 @@ principal:
 	jal timer
 	
 	# quantos blocos o boneco vai andar
-	addi $15 $0 5
+	addi $15 $0 10
 	
 	jal andarDireita
 	
@@ -159,6 +159,11 @@ principal:
 	addi $15 $0 4
 	
 	jal andarEsquerda
+	
+	# quantos blocos o boneco vai andar
+	addi $15 $0 4
+	
+	jal andarPBaixo
 	
 	
 	j sair
@@ -214,6 +219,32 @@ andarEsquerda:
 	
 	# se ainda nao estiver chegado em 0, ele continua o laço
 	bne $15 $0 andarEsquerda
+	
+	jr $31
+
+andarPBaixo:
+	# guardar endereço
+	add $16 $0 $31
+	
+	# adiciona um bloco para do boneco
+	addi $8 $8 4096
+	
+	# chama a função de desenhar boneco com o endereço novo
+	jal desenharBoneco
+	
+	# recuperar o endereço $31
+	add $31 $0 $16
+	
+	# o bloco anterior ao que o boneco está atualmente, serve para apagar o boneco
+	add $14 $8 -4096
+	
+	jal apagarRastro
+	
+	# recuperar o endereço $31
+	add $31 $0 $16
+	
+	# se ainda nao estiver chegado em 0, ele continua o laço
+	bne $15 $0 andarPBaixo
 	
 	jr $31
 
