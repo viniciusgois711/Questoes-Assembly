@@ -165,6 +165,11 @@ principal:
 	
 	jal andarPBaixo
 	
+	# quantos blocos o boneco vai andar
+	addi $15 $0 3
+	
+	jal andarPCima
+	
 	
 	j sair
 
@@ -226,7 +231,7 @@ andarPBaixo:
 	# guardar endereço
 	add $16 $0 $31
 	
-	# adiciona um bloco para do boneco
+	# adiciona um bloco para baixo do boneco
 	addi $8 $8 4096
 	
 	# chama a função de desenhar boneco com o endereço novo
@@ -247,6 +252,33 @@ andarPBaixo:
 	bne $15 $0 andarPBaixo
 	
 	jr $31
+
+andarPCima:
+	# guardar endereço
+	add $16 $0 $31
+	
+	# adiciona um bloco para baixo do boneco
+	addi $8 $8 -4096
+	
+	# chama a função de desenhar boneco com o endereço novo
+	jal desenharBoneco
+	
+	# recuperar o endereço $31
+	add $31 $0 $16
+	
+	# o bloco anterior ao que o boneco está atualmente, serve para apagar o boneco
+	add $14 $8 4096
+	
+	jal apagarRastro
+	
+	# recuperar o endereço $31
+	add $31 $0 $16
+	
+	# se ainda nao estiver chegado em 0, ele continua o laço
+	bne $15 $0 andarPCima
+	
+	jr $31
+
 
 apagarRastro:
 	add $17 $0 $31
