@@ -2,8 +2,7 @@
 main:
 	lui $8, 0x1001
 	
-	lui $9, 0xFF66       # 
-	ori $9, $9, 0x00FF  # Cor Azul
+	li $9, 0xFF6600FF
 
 	lui $19, 0xAAAA       # 
 	ori $19, $19, 0xFFFF  # Cor Azul Borda
@@ -145,30 +144,40 @@ copiaCenario:
 principal:
 	# endereço inicial boneco
 	lui $8 0x1001
+	addi $8 $8 57376
+
 	# chama função de desenhar o boneco
 	jal desenharBoneco
 	
 	jal timer
 	
 	# quantos blocos o boneco vai andar
-	addi $15 $0 10
+	addi $15 $0 2
 	
 	jal andarDireita
 	
 	# quantos blocos o boneco vai andar
-	addi $15 $0 4
+	addi $15 $0 1
 	
 	jal andarEsquerda
 	
 	# quantos blocos o boneco vai andar
-	addi $15 $0 4
+	addi $15 $0 1
 	
 	jal andarPBaixo
 	
 	# quantos blocos o boneco vai andar
-	addi $15 $0 3
+	addi $15 $0 2
 	
 	jal andarPCima
+	
+	addi $15 $0 1
+	
+	jal andarDireita
+	
+	addi $15 $0 2
+	
+	jal andarEsquerda
 	
 	
 	j sair
@@ -177,6 +186,14 @@ andarDireita:
 
 	# guardar endereço
 	add $16 $0 $31
+	
+	li $20, 0xFF6600FF
+ 	
+ 	# pega o endereço do lado direito do bloco atual do boneco
+	lw $21 32($8)
+
+	# se o bloco do lado for da cor da borda, ele pula o codigo
+	beq $20 $21 pularCodigoAndarDireita
 	
 	# adiciona um bloco para a direita ao endereço do boneco
 	addi $8 $8 32
@@ -198,12 +215,21 @@ andarDireita:
 	# se ainda nao estiver chegado em 0, ele continua o laço
 	bne $15 $0 andarDireita
 	
-	jr $31
+	pularCodigoAndarDireita:
+		jr $31
 
 andarEsquerda:
 
 	# guardar endereço
 	add $16 $0 $31
+	
+	li $20, 0xFF6600FF
+ 	
+ 	# pega o endereço do lado direito do bloco atual do boneco
+	lw $21 -32($8)
+
+	# se o bloco de baixo for da cor da borda, ele pula o codigo
+	beq $20 $21 pularCodigoAndarEsquerda
 	
 	# adiciona um bloco para a esquerda ao endereço do boneco
 	addi $8 $8 -32
@@ -225,11 +251,20 @@ andarEsquerda:
 	# se ainda nao estiver chegado em 0, ele continua o laço
 	bne $15 $0 andarEsquerda
 	
-	jr $31
+	pularCodigoAndarEsquerda:
+		jr $31
 
 andarPBaixo:
 	# guardar endereço
 	add $16 $0 $31
+	
+	li $20, 0xFF6600FF
+ 	
+ 	# pega o endereço de baixo do bloco atual do boneco
+	lw $21 4608($8)
+
+	# se o bloco de baixo for da cor da borda, ele pula o codigo
+	beq $20 $21 pularCodigoAndarBaixo
 	
 	# adiciona um bloco para baixo do boneco
 	addi $8 $8 4096
@@ -251,11 +286,20 @@ andarPBaixo:
 	# se ainda nao estiver chegado em 0, ele continua o laço
 	bne $15 $0 andarPBaixo
 	
-	jr $31
+	pularCodigoAndarBaixo:
+		jr $31
 
 andarPCima:
 	# guardar endereço
 	add $16 $0 $31
+	
+	li $20, 0xFF6600FF
+ 	
+ 	# pega o endereço de cima do bloco atual do boneco
+	lw $21 -3584($8)
+
+	# se o bloco de baixo for da cor da borda, ele pula o codigo
+	beq $20 $21 pularCodigoAndarCima
 	
 	# adiciona um bloco para baixo do boneco
 	addi $8 $8 -4096
@@ -277,7 +321,8 @@ andarPCima:
 	# se ainda nao estiver chegado em 0, ele continua o laço
 	bne $15 $0 andarPCima
 	
-	jr $31
+	pularCodigoAndarCima:
+		jr $31
 
 
 apagarRastro:
@@ -356,7 +401,7 @@ desenharBoneco:
 	sw $9, 2588($24)
 	
 	# camisa boneco
-	li $9 0x2858F4
+	li $9 0xBF0101
 	sw $9, 2052($24)
 	sw $9, 2056($24)
 	sw $9, 2060($24)
