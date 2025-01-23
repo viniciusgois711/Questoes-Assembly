@@ -1,3 +1,4 @@
+
 .text
 main:
 	lui $8, 0x1001
@@ -144,43 +145,57 @@ copiaCenario:
 principal:
 	# endereço inicial boneco
 	lui $8 0x1001
-	addi $8 $8 57376
+	addi $8 $8 57888
+	
+
 
 	# chama função de desenhar o boneco
 	jal desenharBoneco
 	
 	jal timer
 	
-	# quantos blocos o boneco vai andar
-	addi $15 $0 2
 	
-	jal andarDireita
+
+loopPrincipall:
+	bne $0 $0 sair
+	addi $5 $0 14
 	
-	# quantos blocos o boneco vai andar
-	addi $15 $0 1
-	
-	jal andarEsquerda
-	
-	# quantos blocos o boneco vai andar
-	addi $15 $0 1
-	
-	jal andarPBaixo
+	addi $2 $0 42
+	syscall
 	
 	# quantos blocos o boneco vai andar
-	addi $15 $0 2
+	add $15 $0 $4
 	
 	jal andarPCima
 	
-	addi $15 $0 1
+	addi $2 $0 42
+	syscall
+	
+	
+	# quantos blocos o boneco vai andar
+	add $15 $0 $4
 	
 	jal andarDireita
 	
-	addi $15 $0 2
+	addi $2 $0 42
+	syscall
+	
+	
+	# quantos blocos o boneco vai andar
+	add $15 $0 $4
+	
+	jal andarPBaixo
+	
+	addi $2 $0 42
+	syscall
+	
+	
+	# quantos blocos o boneco vai andar
+	add $15 $0 $4
 	
 	jal andarEsquerda
 	
-	
-	j sair
+	j loopPrincipall
 
 andarDireita:
 
@@ -261,7 +276,7 @@ andarPBaixo:
 	li $20, 0xFF6600FF
  	
  	# pega o endereço de baixo do bloco atual do boneco
-	lw $21 4608($8)
+	lw $21 4096($8)
 
 	# se o bloco de baixo for da cor da borda, ele pula o codigo
 	beq $20 $21 pularCodigoAndarBaixo
@@ -296,7 +311,7 @@ andarPCima:
 	li $20, 0xFF6600FF
  	
  	# pega o endereço de cima do bloco atual do boneco
-	lw $21 -3584($8)
+	lw $21 -4096($8)
 
 	# se o bloco de baixo for da cor da borda, ele pula o codigo
 	beq $20 $21 pularCodigoAndarCima
