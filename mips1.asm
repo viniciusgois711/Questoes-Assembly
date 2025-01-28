@@ -163,39 +163,14 @@ loopPrincipall:
 	addi $2 $0 42
 	syscall
 	
+	
 	# quantos blocos o boneco vai andar
-	add $15 $0 $4
+	addi $15 $0 500
 	
 	jal andarPCima
 	
-	addi $2 $0 42
-	syscall
 	
-	
-	# quantos blocos o boneco vai andar
-	add $15 $0 $4
-	
-	jal andarDireita
-	
-	addi $2 $0 42
-	syscall
-	
-	
-	# quantos blocos o boneco vai andar
-	add $15 $0 $4
-	
-	jal andarPBaixo
-	
-	addi $2 $0 42
-	syscall
-	
-	
-	# quantos blocos o boneco vai andar
-	add $15 $0 $4
-	
-	jal andarEsquerda
-	
-	j loopPrincipall
+	j sair
 
 andarDireita:
 
@@ -263,6 +238,8 @@ andarEsquerda:
 	# recuperar o endereço $31
 	add $31 $0 $16
 	
+	
+	
 	# se ainda nao estiver chegado em 0, ele continua o laço
 	bne $15 $0 andarEsquerda
 	
@@ -281,8 +258,16 @@ andarPBaixo:
 	# se o bloco de baixo for da cor da borda, ele pula o codigo
 	beq $20 $21 pularCodigoAndarBaixo
 	
+	# o bloco anterior ao que o boneco está atualmente, serve para apagar o boneco
+	add $14 $8 0
+	
+	jal apagarRastro
+	
+	# recuperar o endereço $31
+	add $31 $0 $16
+	
 	# adiciona um bloco para baixo do boneco
-	addi $8 $8 4096
+	addi $8 $8 512
 	
 	# chama a função de desenhar boneco com o endereço novo
 	jal desenharBoneco
@@ -290,10 +275,7 @@ andarPBaixo:
 	# recuperar o endereço $31
 	add $31 $0 $16
 	
-	# o bloco anterior ao que o boneco está atualmente, serve para apagar o boneco
-	add $14 $8 -4096
-	
-	jal apagarRastro
+	jal timer
 	
 	# recuperar o endereço $31
 	add $31 $0 $16
@@ -311,13 +293,21 @@ andarPCima:
 	li $20, 0xFF6600FF
  	
  	# pega o endereço de cima do bloco atual do boneco
-	lw $21 -4096($8)
+	lw $21 -512($8)
 
 	# se o bloco de baixo for da cor da borda, ele pula o codigo
 	beq $20 $21 pularCodigoAndarCima
 	
-	# adiciona um bloco para baixo do boneco
-	addi $8 $8 -4096
+	# o bloco anterior ao que o boneco está atualmente, serve para apagar o boneco
+	add $14 $8 0
+	
+	jal apagarRastro
+	
+	# recuperar o endereço $31
+	add $31 $0 $16
+	
+	# adiciona um bloco para cima do boneco
+	addi $8 $8 -512
 	
 	# chama a função de desenhar boneco com o endereço novo
 	jal desenharBoneco
@@ -325,10 +315,7 @@ andarPCima:
 	# recuperar o endereço $31
 	add $31 $0 $16
 	
-	# o bloco anterior ao que o boneco está atualmente, serve para apagar o boneco
-	add $14 $8 4096
-	
-	jal apagarRastro
+	jal timer
 	
 	# recuperar o endereço $31
 	add $31 $0 $16
@@ -375,7 +362,6 @@ apagarRastro:
 	# diminui a quantidade de espaços a serem percorridos
 	addi $15 $15 -1
 	
-	jal timer
 	# recuperar o endereço $31
 	add $31 $0 $17
 	
@@ -447,7 +433,7 @@ desenharBoneco:
 timer: 
 	sw $16, 0($29)
        addi $29, $29, -4
-       addi $16, $0, 50000
+       addi $16, $0, 10000
 forT:  beq $16, $0, fimT
        nop
        nop
