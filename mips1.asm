@@ -189,6 +189,21 @@ loopPrincipall:
 	
 	jal andarDireita
 	
+	# quantos blocos o boneco vai andar
+	addi $15 $0 32
+	
+	jal andarEsquerda
+	
+	
+	# quantos blocos o boneco vai andar
+	addi $15 $0 12
+	
+	jal andarPCima
+	
+	# quantos blocos o boneco vai andar
+	addi $15 $0 32
+	
+	jal andarEsquerda
 	
 	j sair
 
@@ -253,7 +268,7 @@ andarEsquerda:
 	beq $20 $21 pularCodigoAndarEsquerda
 	
 	# pega o endereço do lado esquerdo do bloco atual do boneco
-	lw $21 -2556($8)
+	lw $21 3580($8)
 
 	# se o bloco de baixo for da cor da borda, ele pula o codigo
 	beq $20 $21 pularCodigoAndarEsquerda
@@ -486,7 +501,7 @@ desenharBoneco:
 timer: 
 	sw $16, 0($29)
        addi $29, $29, -4
-       addi $16, $0, 1000
+       addi $16, $0, 10000
 forT:  beq $16, $0, fimT
        nop
        nop
