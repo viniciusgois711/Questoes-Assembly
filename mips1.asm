@@ -147,7 +147,7 @@ principal:
 	lui $8 0x1001
 	addi $8 $8 57888
 	
-
+	
 
 	# chama função de desenhar o boneco
 	jal desenharBoneco
@@ -160,9 +160,9 @@ loopPrincipall:
 	bne $0 $0 sair
 	addi $5 $0 120
 	
-	
 	addi $2 $0 42
 	syscall
+
 
 	# quantos blocos o boneco vai andar
 	addi $15 $0 40
@@ -496,7 +496,52 @@ desenharBoneco:
 	sw $9, 3092($24)
 	
 	jr $31
+
+desenharBomba:
+
+	addi $22 $8 0
 	
+	# laranja pavil
+	li $9 0xFFA500
+	sw $9 16($22)
+	
+	#amarelo pavil
+	li $9 0xFFFF00
+	sw $9 524($22)
+	
+	# branco pavil
+	li $9 0xffffff
+	sw $9 1036($22)
+	
+	# preto bomba
+	li $9 0x000000
+	sw $9 1032($22)
+	sw $9 1040($22)
+	sw $9 1032($22)
+	
+	sw $9 1540($22)
+	sw $9 1544($22)
+	sw $9 1548($22)
+	sw $9 1552($22)
+	sw $9 1556($22)
+	
+	sw $9 2052($22)
+	sw $9 2056($22)
+	sw $9 2060($22)
+	sw $9 2064($22)
+	sw $9 2068($22)
+	
+	sw $9 2564($22)
+	sw $9 2568($22)
+	sw $9 2572($22)
+	sw $9 2576($22)
+	sw $9 2580($22)
+	
+	sw $9 3080($22)
+	sw $9 3084($22)
+	sw $9 3088($22)
+	
+	jr $31
 
 timer: 
 	sw $16, 0($29)
