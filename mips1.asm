@@ -1,4 +1,3 @@
-
 .text
 main:
 	lui $8, 0x1001
@@ -130,7 +129,7 @@ copiaCenario:
 	addi $10 $0 16384
 	loopCopiaCenario:
 		# quando o registrador 10 tiver passado por todo os bloquinhos, ele sai e vai para a declaração do boneco
-		beq $10, $0, principal
+		beq $10, $0, enderecosIniciais
 		# carrega o que está no endereço 21(cenarioNormal) e coloca no endereço 25
 		lw $25, 0($21)      
 		# vai colocar no endereço 25 o endereço do cenario mais 65536, sendo o final da tela 
@@ -141,71 +140,79 @@ copiaCenario:
 		addi $10 $10 -1
 		# chama o loop
 		j loopCopiaCenario
-			
-principal:
+
+enderecosIniciais:
+
+	# endereco personagem
+	lui $8 0x1001
+	addi $8 $8 4640
+	
+	add $10 $8 $0	
+	
 	# endereço inicial boneco
 	lui $8 0x1001
 	addi $8 $8 57888
 	
-	
+	add $11 $8 $0
+							
+principal:
 
+	add $8 $10 $0
+	
+	jal desenharPersonagem
+	
+	jal teclado
+
+voltaTeclado:
+	
+	lui $8 0x1001
+	addi $8 $8 57888
+	
+	
 	# chama função de desenhar o boneco
 	jal desenharBoneco
 	
+	
+	
 	jal timer
 	
-	
-
-loopPrincipall:
-	bne $0 $0 sair
-	addi $5 $0 120
-	
-	addi $2 $0 42
-	syscall
+	j principal
 
 
-	# quantos blocos o boneco vai andar
-	addi $15 $0 40
+
+teclado:
+  	lui $12, 0xffff  # Armazena o endereco de memoria que armazena 1 se tiver alguma entrada do teclado e 0 se nao
+  	lw $13, 0($12) # armazena no $13 o que esta no endereço de memoria apontado por $12
+  	beq $13, $0, voltaTeclado
+  	
+  	addi $22 $0 1
+  	
+  	lw $13, 4($12) # Armazena no $12 a tecla pressionada
+  	
+  	addi $15 $0 8
+  
+  	addi $16, $0, 65 # A ascii
+  	beq $13, $16, andarEsquerda
+  	addi $16, $0, 97 # a ascii
+  	beq $13, $16, andarEsquerda
+  
+  	addi $16, $0, 68 # D ascii
+  	beq $13, $16, andarDireita
+  	addi $16, $0, 100 # d ascii
+  	beq $13, $16, andarDireita
+  
 	
-	jal andarDireita
+  	addi $16, $0, 83 # S ascii
+  	beq $13, $16, andarPBaixo
+ 	addi $16, $0, 115 # s ascii
+  	beq $13, $16, andarPBaixo
+  	
+  	addi $16, $0, 87 # W ascii
+  	beq $13, $16, andarPCima
+ 	addi $16, $0, 119 # w ascii
+  	beq $13, $16, andarPCima
 	
-	# quantos blocos o boneco vai andar
-	addi $15 $0 40
-	
-	jal andarPCima
-	
-	# quantos blocos o boneco vai andar
-	addi $15 $0 32
-	
-	jal andarDireita
-	
-	# quantos blocos o boneco vai andar
-	addi $15 $0 12
-	
-	jal andarPBaixo
-	
-	# quantos blocos o boneco vai andar
-	addi $15 $0 32
-	
-	jal andarDireita
-	
-	# quantos blocos o boneco vai andar
-	addi $15 $0 32
-	
-	jal andarEsquerda
-	
-	
-	# quantos blocos o boneco vai andar
-	addi $15 $0 12
-	
-	jal andarPCima
-	
-	# quantos blocos o boneco vai andar
-	addi $15 $0 32
-	
-	jal andarEsquerda
-	
-	j sair
+	jr $31
 
 andarDireita:
 
@@ -238,7 +245,7 @@ andarDireita:
 	addi $8 $8 4
 	
 	# chama a função de desenhar boneco com o endereço novo
-	jal desenharBoneco
+	jal desenharPersonagem
 	
 	# recuperar o endereço $31
 	add $31 $0 $16
@@ -251,8 +258,11 @@ andarDireita:
 	# se ainda nao estiver chegado em 0, ele continua o laço
 	bne $15 $0 andarDireita
 	
+	
 	pularCodigoAndarDireita:
+		add $10 $8 $0
 		jr $31
+
 
 andarEsquerda:
 
@@ -285,7 +295,7 @@ andarEsquerda:
 	addi $8 $8 -4
 	
 	# chama a função de desenhar boneco com o endereço novo
-	jal desenharBoneco
+	jal desenharPersonagem
 	
 	# recuperar o endereço $31
 	add $31 $0 $16
@@ -299,7 +309,9 @@ andarEsquerda:
 	# se ainda nao estiver chegado em 0, ele continua o laço
 	bne $15 $0 andarEsquerda
 	
+	
 	pularCodigoAndarEsquerda:
+		add $10 $8 $0
 		jr $31
 
 andarPBaixo:
@@ -332,7 +344,7 @@ andarPBaixo:
 	addi $8 $8 512
 	
 	# chama a função de desenhar boneco com o endereço novo
-	jal desenharBoneco
+	jal desenharPersonagem
 	
 	# recuperar o endereço $31
 	add $31 $0 $16
@@ -346,8 +358,8 @@ andarPBaixo:
 	bne $15 $0 andarPBaixo
 	
 	pularCodigoAndarBaixo:
+		add $10 $8 $0
 		jr $31
-
 andarPCima:
 	# guardar endereço
 	add $16 $0 $31
@@ -378,7 +390,7 @@ andarPCima:
 	addi $8 $8 -512
 	
 	# chama a função de desenhar boneco com o endereço novo
-	jal desenharBoneco
+	jal desenharPersonagem
 	
 	# recuperar o endereço $31
 	add $31 $0 $16
@@ -392,6 +404,7 @@ andarPCima:
 	bne $15 $0 andarPCima
 	
 	pularCodigoAndarCima:
+		add $10 $8 $0
 		jr $31
 
 
@@ -497,6 +510,70 @@ desenharBoneco:
 	
 	jr $31
 
+	
+desenharPersonagem: 	
+	# preto boneco
+	add $24 $8 $0
+	lui $9, 0x0000
+	ori $9, $9, 0x0000
+	sw $9, 8($24)
+	sw $9, 12($24)
+	sw $9, 16($24)
+	sw $9, 20($24)
+	sw $9, 520($24)
+	sw $9, 1036($24)
+	sw $9, 1044($24)
+		
+	# pele boneco
+	li $9 0xf5cbbe
+	
+	sw $9, 516($24)
+	sw $9, 524($24)
+	sw $9, 528($24)
+	sw $9, 532($24)
+	sw $9, 1028($24)
+	sw $9, 1032($24)
+	sw $9, 1040($24)
+	
+	sw $9, 1544($24)
+	sw $9, 1548($24)
+	sw $9, 1552($24)
+	sw $9, 1556($24)
+	
+	sw $9, 2048($24)
+	sw $9, 2076($24)
+	sw $9, 2560($24)
+	sw $9, 2588($24)
+	
+	# camisa boneco
+	li $9 0x000000
+	sw $9, 2052($24)
+	sw $9, 2056($24)
+	sw $9, 2060($24)
+	sw $9, 2064($24)
+	sw $9, 2068($24)
+	sw $9, 2072($24)
+	
+	sw $9, 2564($24)
+	sw $9, 2568($24)
+	sw $9, 2572($24)
+	sw $9, 2576($24)
+	sw $9, 2580($24)
+	sw $9, 2584($24)
+	
+	sw $9, 3588($24)
+	sw $9, 3592($24)
+	sw $9, 3604($24)
+	sw $9, 3608($24)
+	
+	# branco boneco
+	li $9 0xffffff
+	sw $9, 3080($24)
+	sw $9, 3092($24)
+	
+	jr $31
+
+
 desenharBomba:
 
 	addi $22 $8 0
@@ -559,5 +636,3 @@ fimT:  addi $29, $29, 4
 sair:
 	addi $2 $0 10
 	syscall
-	
-	
