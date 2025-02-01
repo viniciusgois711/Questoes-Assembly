@@ -153,7 +153,7 @@ enderecosIniciais:
 	lui $8 0x1001
 	addi $8 $8 57888
 	
-	add $11 $8 $0
+	add $23 $8 $0
 							
 principal:
 
@@ -165,16 +165,19 @@ principal:
 
 voltaTeclado:
 	
-	lui $8 0x1001
-	addi $8 $8 57888
-	
+	addi $8 $23 0
 	
 	# chama função de desenhar o boneco
 	jal desenharBoneco
 	
 	
+	addi $15 $0 4
 	
-	jal timer
+	jal andarDireitaBoneco
+	
+	addi $15 $0 4
+	
+	jal andarEsquerdaBoneco
 	
 	j principal
 
@@ -185,11 +188,10 @@ teclado:
   	lw $13, 0($12) # armazena no $13 o que esta no endereço de memoria apontado por $12
   	beq $13, $0, voltaTeclado
   	
-  	addi $22 $0 1
   	
   	lw $13, 4($12) # Armazena no $12 a tecla pressionada
   	
-  	addi $15 $0 8
+  	addi $15 $0 4
   
   	addi $16, $0, 65 # A ascii
   	beq $13, $16, andarEsquerda
@@ -212,10 +214,12 @@ teclado:
  	addi $16, $0, 119 # w ascii
   	beq $13, $16, andarPCima
 	
+	
+	
 	jr $31
 
 andarDireita:
-
+	
 	# guardar endereço
 	add $16 $0 $31
 	
@@ -254,6 +258,8 @@ andarDireita:
 	
 	# recuperar o endereço $31
 	add $31 $0 $16
+	# diminui a quantidade de espaços a serem percorridos
+	addi $15 $15 -1
 	
 	# se ainda nao estiver chegado em 0, ele continua o laço
 	bne $15 $0 andarDireita
@@ -262,6 +268,59 @@ andarDireita:
 	pularCodigoAndarDireita:
 		add $10 $8 $0
 		jr $31
+
+
+andarDireitaBoneco:
+	
+
+	# guardar endereço
+	add $16 $0 $31
+	
+	li $20, 0xFF6600FF
+ 	
+ 	# pega o endereço do lado direito do bloco atual do boneco
+	lw $21 32($23)
+
+	# se o bloco do lado for da cor da borda, ele pula o codigo
+	beq $20 $21 pularCodigoAndarDireitaBoneco
+	
+	# pega o endereço do lado direito do bloco atual do boneco
+	lw $21 3616($23)
+
+	# se o bloco do lado for da cor da borda, ele pula o codigo
+	beq $20 $21 pularCodigoAndarDireitaBoneco
+	
+	# o bloco que o boneco está atualmente, serve para apagar o boneco
+	add $14 $23 0
+	
+	jal apagarRastro
+	
+	# recuperar o endereço $31
+	add $31 $0 $16
+	
+	# adiciona um bloco para a direita ao endereço do boneco
+	addi $23 $23 4
+	
+	# chama a função de desenhar boneco com o endereço novo
+	jal desenharBoneco
+	
+	# recuperar o endereço $31
+	add $31 $0 $16
+	
+	jal timer
+	
+	# recuperar o endereço $31
+	add $31 $0 $16
+	# diminui a quantidade de espaços a serem percorridos
+	addi $15 $15 -1
+	# se ainda nao estiver chegado em 0, ele continua o laço
+	bne $15 $0 andarDireitaBoneco
+	
+	
+	pularCodigoAndarDireitaBoneco:
+		
+		jr $31
+
 
 
 andarEsquerda:
@@ -304,7 +363,8 @@ andarEsquerda:
 	
 	# recuperar o endereço $31
 	add $31 $0 $16
-	
+	# diminui a quantidade de espaços a serem percorridos
+	addi $15 $15 -1
 	
 	# se ainda nao estiver chegado em 0, ele continua o laço
 	bne $15 $0 andarEsquerda
@@ -313,6 +373,59 @@ andarEsquerda:
 	pularCodigoAndarEsquerda:
 		add $10 $8 $0
 		jr $31
+
+
+
+andarEsquerdaBoneco:
+
+	# guardar endereço
+	add $16 $0 $31
+	
+	li $20, 0xFF6600FF
+ 	
+ 	# pega o endereço do lado esquerdo do bloco atual do boneco
+	lw $21 -4($23)
+
+	# se o bloco de baixo for da cor da borda, ele pula o codigo
+	beq $20 $21 pularCodigoAndarEsquerdaBoneco
+	
+	# pega o endereço do lado esquerdo do bloco atual do boneco
+	lw $21 3580($23)
+
+	# se o bloco de baixo for da cor da borda, ele pula o codigo
+	beq $20 $21 pularCodigoAndarEsquerdaBoneco
+	
+	# o bloco que o boneco está atualmente, serve para apagar o boneco
+	add $14 $23 0
+	
+	jal apagarRastro
+	
+	# recuperar o endereço $31
+	add $31 $0 $16
+	
+	# adiciona um bloco para a esquerda ao endereço do boneco
+	addi $23 $23 -4
+	
+	# chama a função de desenhar boneco com o endereço novo
+	jal desenharBoneco
+	
+	# recuperar o endereço $31
+	add $31 $0 $16
+	
+	jal timer
+	
+	# recuperar o endereço $31
+	add $31 $0 $16
+	# diminui a quantidade de espaços a serem percorridos
+	addi $15 $15 -1
+	
+	# se ainda nao estiver chegado em 0, ele continua o laço
+	bne $15 $0 andarEsquerdaBoneco
+	
+	
+	pularCodigoAndarEsquerdaBoneco:
+		jr $31
+
 
 andarPBaixo:
 	# guardar endereço
@@ -353,6 +466,9 @@ andarPBaixo:
 	
 	# recuperar o endereço $31
 	add $31 $0 $16
+	
+	# diminui a quantidade de espaços a serem percorridos
+	addi $15 $15 -1
 	
 	# se ainda nao estiver chegado em 0, ele continua o laço
 	bne $15 $0 andarPBaixo
@@ -400,6 +516,9 @@ andarPCima:
 	# recuperar o endereço $31
 	add $31 $0 $16
 	
+	# diminui a quantidade de espaços a serem percorridos
+	addi $15 $15 -1
+	
 	# se ainda nao estiver chegado em 0, ele continua o laço
 	bne $15 $0 andarPCima
 	
@@ -409,7 +528,7 @@ andarPCima:
 
 
 apagarRastro:
-	add $17 $0 $31
+
 	# quantidade de bloquinhos na vertical,
 	addi $11 $0 8
 	laco_apagar_rastro_1:
@@ -421,7 +540,7 @@ apagarRastro:
 			# se todos os bloquinho da horizontal estiverem recuperados, ele sai
 			beq $12 $0 fim_laco_apagar_rastro_2
 			
-			# guada no endereço 13, o que está na copia e se reperte em cada bloquinho
+			# guarda no endereço 13, o que está na copia e se reperte em cada bloquinho
 			lw $13 65536($14)
 			# coloca no endereço 14 o que está no 13
 			sw $13 0($14)
@@ -440,17 +559,15 @@ apagarRastro:
 		j laco_apagar_rastro_1
 		
 	fim_laco_apagar_rastro_1:
-	# diminui a quantidade de espaços a serem percorridos
-	addi $15 $15 -1
+	
 	
 	# recuperar o endereço $31
-	add $31 $0 $17
 	
 	jr $31
 	
 desenharBoneco: 	
 	# preto boneco
-	add $24 $8 $0
+	add $24 $23 $0
 	lui $9, 0x0000
 	ori $9, $9, 0x0000
 	sw $9, 8($24)
