@@ -171,21 +171,10 @@ voltaTeclado:
 	jal desenharBoneco
 	
 	
-	addi $15 $0 4
+	addi $15 $0 2
 	
 	jal andarDireitaBoneco
 	
-	addi $15 $0 4
-	
-	jal andarEsquerdaBoneco
-	
-	addi $15 $0 4
-	
-	jal andarPCimaBoneco
-	
-	addi $15 $0 4
-	
-	jal andarPBaixoBoneco
 	
 	j principal
 
@@ -199,7 +188,7 @@ teclado:
   	
   	lw $13, 4($12) # Armazena no $12 a tecla pressionada
   	
-  	addi $15 $0 4
+  	addi $15 $0 2
   
   	addi $16, $0, 65 # A ascii
   	beq $13, $16, andarEsquerda
@@ -222,10 +211,10 @@ teclado:
  	addi $16, $0, 119 # w ascii
   	beq $13, $16, andarPCima
 	
-	
+	addi $16, $0, 32 # Space ascii
+  	beq $13, $16, desenharBomba
 	
 	jr $31
-
 andarDireita:
 	
 	# guardar endereço
@@ -278,6 +267,7 @@ andarDireita:
 		jr $31
 
 
+		
 andarDireitaBoneco:
 	
 
@@ -804,8 +794,18 @@ desenharPersonagem:
 
 
 desenharBomba:
-
-	addi $22 $8 0
+	
+	li $20, 0xFF6600FF
+	
+	lw $21, -32($8)
+	
+	beq $20 $21 pularDesenharBomba
+	
+	lw $21 3580($8)
+	
+	beq $20 $21 pularDesenharBomba
+	
+	addi $22 $8 -32
 	
 	# laranja pavil
 	li $9 0xFFA500
@@ -847,7 +847,8 @@ desenharBomba:
 	sw $9 3084($22)
 	sw $9 3088($22)
 	
-	jr $31
+	pularDesenharBomba:
+		jr $31
 
 timer: 
 	sw $16, 0($29)
