@@ -986,6 +986,8 @@ desenharBomba:
 	
 	addi $22 $8 -32
 	
+	addi $17 $22 0
+	
 	# laranja pavil
 	li $9 0xFFA500
 	sw $9 16($22)
@@ -1026,8 +1028,54 @@ desenharBomba:
 	sw $9 3084($22)
 	sw $9 3088($22)
 	
+	j desenharExplosao
+	
 	pularDesenharBomba:
 		jr $31
+
+desenharExplosao:
+	addi $19 $0 24
+	addi $18 $17 -32
+	# laranja
+	li $9 0xFF5733
+	
+	loopExplosaoHorizontal:
+		beq $19 $0 inicializadorVertical
+		sw $9, 0($18)       # 1
+		sw $9, 512($18)     # 2
+		sw $9, 1024($18)    # 3
+		sw $9, 1536($18)    # 4
+		sw $9, 2048($18)    # 5
+		sw $9, 2560($18)    # 6
+		sw $9, 3072($18)    # 7
+		sw $9, 3584($18)    # 8
+		
+		addi $18 $18 4
+		addi $19 $19 -1
+		j loopExplosaoHorizontal
+		
+	inicializadorVertical:
+		addi $18 $17 -512
+		addi $19 $0 24
+	
+	loopExplosaoVertical:
+		beq $19 $0 sairLoopExplosao
+		sw $9, 0($18)       # 1
+		sw $9, 512($18)     # 2
+		sw $9, 1024($18)    # 3
+		sw $9, 1536($18)    # 4
+		sw $9, 2048($18)    # 5
+		sw $9, 2560($18)    # 6
+		sw $9, 3072($18)    # 7
+		sw $9, 3584($18)    # 8
+		
+		addi $18 $18 4
+		addi $19 $19 -1
+		j loopExplosaoVertical
+		
+	sairLoopExplosao:
+		jr $31
+	
 
 timer: 
 	sw $16, 0($29)
