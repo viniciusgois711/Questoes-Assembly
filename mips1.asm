@@ -170,11 +170,9 @@ voltaTeclado:
 	# chama função de desenhar o boneco
 	jal desenharBoneco
 	
-	
-	addi $15 $0 2
+	addi $15 $0 1
 	
 	jal andarDireitaBoneco
-	
 	
 	j principal
 
@@ -462,6 +460,28 @@ andarEsquerdaBoneco:
 	# se o bloco de baixo for da cor da borda, ele pula o codigo
 	beq $20 $21 pularCodigoAndarEsquerdaBoneco
 	
+	addi $11 $0 8
+	
+	# cor da bomba
+	li $20, 0x000000
+	
+	addi $22 $23 -4
+	
+	
+	loopColisaoBombaEsquerdaBoneco:
+		lw $21 0($22)
+		beq $11 $0 sairloopColisaoBombaEsquerdaBoneco
+ 		beq $20 $21 pularCodigoAndarEsquerdaBoneco
+ 		
+ 		add $22 $22 512
+ 		addi $11 $11 -1
+ 		
+ 		j loopColisaoBombaEsquerdaBoneco
+ 		
+ 	sairloopColisaoBombaEsquerdaBoneco:
+	
+	
+	
 	# o bloco que o boneco está atualmente, serve para apagar o boneco
 	add $14 $23 0
 	
@@ -585,6 +605,28 @@ andarPBaixoBoneco:
 
 	# se o bloco de baixo for da cor da borda, ele pula o codigo
 	beq $20 $21 pularCodigoAndarBaixoBoneco
+	
+	
+	addi $11 $0 8
+	
+	# cor da bomba
+	li $20, 0x000000
+	
+	addi $22 $23 4096
+	
+	
+	loopColisaoBombaPBaixoBoneco:
+		lw $21 0($22)
+		beq $11 $0 sairloopColisaoBombaPBaixoBoneco
+ 		beq $20 $21 pularCodigoAndarBaixoBoneco
+ 		
+ 		add $22 $22 4
+ 		addi $11 $11 -1
+ 		
+ 		j loopColisaoBombaPBaixoBoneco
+ 		
+ 	sairloopColisaoBombaPBaixoBoneco:
+	
 	
 	# o bloco anterior ao que o boneco está atualmente, serve para apagar o boneco
 	add $14 $23 0
@@ -710,6 +752,27 @@ andarPCimaBoneco:
 
 	# se o bloco de baixo for da cor da borda, ele pula o codigo
 	beq $20 $21 pularCodigoAndarCimaBoneco
+	
+	addi $11 $0 8
+	
+	# cor da bomba
+	li $20, 0x000000
+	
+	addi $22 $23 -512
+	
+	
+	loopColisaoBombaPCimaBoneco:
+		lw $21 0($22)
+		beq $11 $0 sairloopColisaoBombaPCimaBoneco
+ 		beq $20 $21 pularCodigoAndarCimaBoneco
+ 		
+ 		add $22 $22 4
+ 		addi $11 $11 -1
+ 		
+ 		j loopColisaoBombaPCimaBoneco
+ 		
+ 	sairloopColisaoBombaPCimaBoneco:
+	
 	
 	# o bloco anterior ao que o boneco está atualmente, serve para apagar o boneco
 	add $14 $23 0
