@@ -215,15 +215,19 @@ teclado:
   	beq $13, $16, desenharBomba
 	
 	jr $31
+	
 andarDireita:
+
 	
 	# guardar endereço
 	add $16 $0 $31
 	
+	# cor da borda
 	li $20, 0xFF6600FF
- 	
+
  	# pega o endereço do lado direito do bloco atual do boneco
 	lw $21 32($8)
+	
 
 	# se o bloco do lado for da cor da borda, ele pula o codigo
 	beq $20 $21 pularCodigoAndarDireita
@@ -233,6 +237,26 @@ andarDireita:
 
 	# se o bloco do lado for da cor da borda, ele pula o codigo
 	beq $20 $21 pularCodigoAndarDireita
+	
+	addi $11 $0 8
+	
+	# cor da bomba
+	li $20, 0x000000
+	
+	addi $22 $8 32
+	
+	
+	loopColisaoBomba:
+		lw $21 0($22)
+		beq $11 $0 sairloopColisaoBomba
+ 		beq $20 $21 pularCodigoAndarDireita
+ 		
+ 		add $22 $22 512
+ 		addi $11 $11 -1
+ 		
+ 		j loopColisaoBomba
+ 		
+ 	sairloopColisaoBomba:
 	
 	# o bloco anterior ao que o boneco está atualmente, serve para apagar o boneco
 	add $14 $8 0
@@ -288,6 +312,28 @@ andarDireitaBoneco:
 	# se o bloco do lado for da cor da borda, ele pula o codigo
 	beq $20 $21 pularCodigoAndarDireitaBoneco
 	
+	
+	addi $11 $0 8
+	
+	# cor da bomba
+	li $20, 0x000000
+	
+	addi $22 $23 32
+	
+	
+	loopColisaoBombaDireitaBoneco:
+		lw $21 0($22)
+		beq $11 $0 sairloopColisaoBombaDireitaBoneco
+ 		beq $20 $21 pularCodigoAndarDireitaBoneco
+ 		
+ 		add $22 $22 512
+ 		addi $11 $11 -1
+ 		
+ 		j loopColisaoBombaDireitaBoneco
+ 		
+ 	sairloopColisaoBombaDireitaBoneco:
+	
+	
 	# o bloco que o boneco está atualmente, serve para apagar o boneco
 	add $14 $23 0
 	
@@ -339,6 +385,29 @@ andarEsquerda:
 
 	# se o bloco de baixo for da cor da borda, ele pula o codigo
 	beq $20 $21 pularCodigoAndarEsquerda
+	
+	
+	addi $11 $0 8
+	
+	# cor da bomba
+	li $20, 0x000000
+	
+	addi $22 $8 -4
+	
+	
+	loopColisaoBombaEsquerda:
+		lw $21 0($22)
+		beq $11 $0 sairloopColisaoBombaEsquerda
+ 		beq $20 $21 pularCodigoAndarEsquerda
+ 		
+ 		add $22 $22 512
+ 		addi $11 $11 -1
+ 		
+ 		j loopColisaoBombaEsquerda
+ 		
+ 	sairloopColisaoBombaEsquerda:
+	
+	
 	
 	# o bloco que o boneco está atualmente, serve para apagar o boneco
 	add $14 $8 0
@@ -443,6 +512,29 @@ andarPBaixo:
 	# se o bloco de baixo for da cor da borda, ele pula o codigo
 	beq $20 $21 pularCodigoAndarBaixo
 	
+	# quantas vezes o loop se repete
+	addi $11 $0 8
+	
+	# cor da bomba
+	li $20, 0x000000
+	
+	addi $22 $8 4096
+	
+	
+	loopColisaoBombaPBaixo:
+		lw $21 0($22)
+		beq $11 $0 sairloopColisaoBombaPBaixo
+ 		beq $20 $21 pularCodigoAndarBaixo
+ 		
+ 		add $22 $22 4
+ 		addi $11 $11 -1
+ 		
+ 		j loopColisaoBombaPBaixo
+ 		
+ 	sairloopColisaoBombaPBaixo:
+	
+	
+	
 	# o bloco anterior ao que o boneco está atualmente, serve para apagar o boneco
 	add $14 $8 0
 	
@@ -543,6 +635,29 @@ andarPCima:
 
 	# se o bloco de baixo for da cor da borda, ele pula o codigo
 	beq $20 $21 pularCodigoAndarCima
+	
+	
+	addi $11 $0 8
+	
+	# cor da bomba
+	li $20, 0x000000
+	
+	addi $22 $8 -512
+	
+	
+	loopColisaoBombaPCima:
+		lw $21 0($22)
+		beq $11 $0 sairloopColisaoBombaPCima
+ 		beq $20 $21 pularCodigoAndarCima
+ 		
+ 		add $22 $22 4
+ 		addi $11 $11 -1
+ 		
+ 		j loopColisaoBombaPCima
+ 		
+ 	sairloopColisaoBombaPCima:
+	
+	
 	
 	# o bloco anterior ao que o boneco está atualmente, serve para apagar o boneco
 	add $14 $8 0
