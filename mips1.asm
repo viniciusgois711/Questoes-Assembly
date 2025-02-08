@@ -1055,27 +1055,90 @@ desenharExplosao:
 		j loopExplosaoHorizontal
 		
 	inicializadorVertical:
-		addi $18 $17 -512
+		addi $18 $17 -4096
 		addi $19 $0 24
 	
 	loopExplosaoVertical:
 		beq $19 $0 sairLoopExplosao
 		sw $9, 0($18)       # 1
-		sw $9, 512($18)     # 2
-		sw $9, 1024($18)    # 3
-		sw $9, 1536($18)    # 4
-		sw $9, 2048($18)    # 5
-		sw $9, 2560($18)    # 6
-		sw $9, 3072($18)    # 7
-		sw $9, 3584($18)    # 8
+		sw $9, 4($18)     # 2
+		sw $9, 8($18)    # 3
+		sw $9, 12($18)    # 4
+		sw $9, 16($18)    # 5
+		sw $9, 20($18)    # 6
+		sw $9, 24($18)    # 7
+		sw $9, 28($18)    # 8
 		
-		addi $18 $18 4
+		addi $18 $18 512
 		addi $19 $19 -1
 		j loopExplosaoVertical
 		
+		
+		
+		
 	sairLoopExplosao:
+		addi $19 $0 2
+		addi $24 $0 1
+		addi $14 $18 -4096
+		addi $18 $0 1
+		j apagarExplosao
 		jr $31
+
+
+apagarExplosao:
+
+	# quantidade de bloquinhos na vertical,
+	addi $11 $0 8
+	laco_apagar_bomba_1:
+		# se o contator estiver zerado, sai do laço
+		beq $11 $0 fim_laco_apagar_bomba_1
+		# quantidade de bloquinhos na horizontal
+		addi $12 $0 8
+		laco_apagar_bomba_2:
+			# se todos os bloquinho da horizontal estiverem recuperados, ele sai
+			beq $12 $0 fim_laco_bomba_2
+			
+			# guarda no endereço 13, o que está na copia e se reperte em cada bloquinho
+			lw $13 65536($14)
+			# coloca no endereço 14 o que está no 13
+			sw $13 0($14)
+			# vai para o endereço do proximo bloquinho
+			addi $14 $14 4
+			# diminui um bloquinho
+			addi $12 $12 -1
+			j laco_apagar_bomba_2
+		fim_laco_bomba_2:
+		# pega o endereço do bloco anterior ao que o boneco está atualmente (ele soma 4 oito vezes, emtão 32, com isso ele vai para o inicio da linha de novo
+		addi $14 $14 -32
+		# depois de ir para o inicio da linha ele vai para a linha de bloquinhos de baixo
+		addi $14 $14 512
+		# diminui um do contador de blocos na vertical
+		addi $11 $11 -1
+		j laco_apagar_bomba_1
+		
+	fim_laco_apagar_bomba_1:
 	
+	
+	beq $19 $0 sairApagarExplosaoHorizontal
+	addi $14 $14 -8192
+	addi $19 $19 -1
+	j apagarExplosao
+	
+	sairApagarExplosaoHorizontal:
+		beq $24 $0 sairApagarExplosao
+		addi $14 $14 32
+		addi $24 $24 -1
+		j apagarExplosao
+	
+	sairApagarExplosao:
+		beq $18 $0 sairGeralExplosao
+		addi $18 $18 -1
+		addi $14 $14 -4160
+
+		j apagarExplosao
+
+	sairGeralExplosao:
+		jr $31
 
 timer: 
 	sw $16, 0($29)
