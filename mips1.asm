@@ -142,6 +142,8 @@ copiaCenario:
 		j loopCopiaCenario
 
 enderecosIniciais:
+	
+	
 
 	# endereco personagem
 	lui $8 0x1001
@@ -149,33 +151,76 @@ enderecosIniciais:
 	
 	add $10 $8 $0	
 	
+	lui $23, 0x1002
+	sw $8 8($23)
+	
 	# endereço inicial boneco
 	lui $8 0x1001
 	addi $8 $8 57888
+
+	# endereco boneco
+	lui $23, 0x1002
+	sw $8 0($23)
+		
+	# contador
+	addi $17 $0 20
+	sw $17 4($23)	
 	
-	add $23 $8 $0
-							
+	
+	
+	li $5 4
+	li $2 42
+	syscall	
+	addi $4 $4 1
+						
 principal:
 
 	add $8 $10 $0
 	
+	lw $17 8($23)
 	jal desenharPersonagem
 	
 	jal teclado
 
 voltaTeclado:
 	
-	addi $8 $23 0
+	lw $17 4($23)
 	
+	beq $17 $0 reiniciaTimer
+
+	lw $17 0($23)
 	# chama função de desenhar o boneco
 	jal desenharBoneco
 	
 	addi $15 $0 1
 	
-	jal andarDireitaBoneco
+	addi $17 $0 1
+	beq $4 $17 andarDireitaBoneco
+	addi $17 $0 2
+	beq $4 $17 andarEsquerdaBoneco
+	addi $17 $0 3
+	beq $4 $17 andarPCimaBoneco
+	addi $17 $0 4
+	beq $4 $17 andarPBaixoBoneco
 	
-	j principal
+	
+	testarVolta:
+		
 
+		lw $17 4($23)
+		addi $17 $17 -1
+		sw $17 4($23)	
+	
+		j principal
+	
+	reiniciaTimer:
+		li $5 4
+		li $2 42
+		syscall
+		addi $4 $4 1
+		addi $17 $0 20
+		sw $17 4($23)
+		j principal
 
 
 teclado:
@@ -292,6 +337,8 @@ andarDireita:
 		
 andarDireitaBoneco:
 	
+	lui $23 0x1002
+	lw $17 0($23) 	
 
 	# guardar endereço
 	add $16 $0 $31
@@ -299,13 +346,13 @@ andarDireitaBoneco:
 	li $20, 0xFF6600FF
  	
  	# pega o endereço do lado direito do bloco atual do boneco
-	lw $21 32($23)
+	lw $21 32($17)
 
 	# se o bloco do lado for da cor da borda, ele pula o codigo
 	beq $20 $21 pularCodigoAndarDireitaBoneco
 	
 	# pega o endereço do lado direito do bloco atual do boneco
-	lw $21 3616($23)
+	lw $21 3616($17)
 
 	# se o bloco do lado for da cor da borda, ele pula o codigo
 	beq $20 $21 pularCodigoAndarDireitaBoneco
@@ -316,7 +363,7 @@ andarDireitaBoneco:
 	# cor da bomba
 	li $20, 0x000000
 	
-	addi $22 $23 32
+	addi $22 $17 32
 	
 	
 	loopColisaoBombaDireitaBoneco:
@@ -333,7 +380,7 @@ andarDireitaBoneco:
 	
 	
 	# o bloco que o boneco está atualmente, serve para apagar o boneco
-	add $14 $23 0
+	add $14 $17 0
 	
 	jal apagarRastro
 	
@@ -341,7 +388,9 @@ andarDireitaBoneco:
 	add $31 $0 $16
 	
 	# adiciona um bloco para a direita ao endereço do boneco
-	addi $23 $23 4
+	addi $17 $17 4
+	
+	sw $17 0($23)
 	
 	# chama a função de desenhar boneco com o endereço novo
 	jal desenharBoneco
@@ -361,7 +410,7 @@ andarDireitaBoneco:
 	
 	pularCodigoAndarDireitaBoneco:
 		
-		jr $31
+		j testarVolta
 
 
 
@@ -443,19 +492,22 @@ andarEsquerda:
 
 andarEsquerdaBoneco:
 
+	lui $23 0x1002
+	lw $17 0($23)
+
 	# guardar endereço
 	add $16 $0 $31
 	
 	li $20, 0xFF6600FF
  	
  	# pega o endereço do lado esquerdo do bloco atual do boneco
-	lw $21 -4($23)
+	lw $21 -4($17)
 
 	# se o bloco de baixo for da cor da borda, ele pula o codigo
 	beq $20 $21 pularCodigoAndarEsquerdaBoneco
 	
 	# pega o endereço do lado esquerdo do bloco atual do boneco
-	lw $21 3580($23)
+	lw $21 3580($17)
 
 	# se o bloco de baixo for da cor da borda, ele pula o codigo
 	beq $20 $21 pularCodigoAndarEsquerdaBoneco
@@ -465,7 +517,7 @@ andarEsquerdaBoneco:
 	# cor da bomba
 	li $20, 0x000000
 	
-	addi $22 $23 -4
+	addi $22 $17 -4
 	
 	
 	loopColisaoBombaEsquerdaBoneco:
@@ -483,7 +535,7 @@ andarEsquerdaBoneco:
 	
 	
 	# o bloco que o boneco está atualmente, serve para apagar o boneco
-	add $14 $23 0
+	add $14 $17 0
 	
 	jal apagarRastro
 	
@@ -491,7 +543,9 @@ andarEsquerdaBoneco:
 	add $31 $0 $16
 	
 	# adiciona um bloco para a esquerda ao endereço do boneco
-	addi $23 $23 -4
+	addi $17 $17 -4
+	
+	sw $17 0($23)
 	
 	# chama a função de desenhar boneco com o endereço novo
 	jal desenharBoneco
@@ -511,7 +565,7 @@ andarEsquerdaBoneco:
 	
 	
 	pularCodigoAndarEsquerdaBoneco:
-		jr $31
+		j testarVolta
 
 
 andarPBaixo:
@@ -589,19 +643,23 @@ andarPBaixo:
 
 
 andarPBaixoBoneco:
+
+	lui $23 0x1002
+	lw $17 0($23)
+
 	# guardar endereço
 	add $16 $0 $31
 	
 	li $20, 0xFF6600FF
  	
  	# pega o endereço de baixo do bloco atual do boneco
-	lw $21 4096($23)
+	lw $21 4096($17)
 
 	# se o bloco de baixo for da cor da borda, ele pula o codigo
 	beq $20 $21 pularCodigoAndarBaixoBoneco
 	
 	# pega o endereço de baixo do bloco atual do boneco
-	lw $21 4124($23)
+	lw $21 4124($17)
 
 	# se o bloco de baixo for da cor da borda, ele pula o codigo
 	beq $20 $21 pularCodigoAndarBaixoBoneco
@@ -612,7 +670,7 @@ andarPBaixoBoneco:
 	# cor da bomba
 	li $20, 0x000000
 	
-	addi $22 $23 4096
+	addi $22 $17 4096
 	
 	
 	loopColisaoBombaPBaixoBoneco:
@@ -629,7 +687,7 @@ andarPBaixoBoneco:
 	
 	
 	# o bloco anterior ao que o boneco está atualmente, serve para apagar o boneco
-	add $14 $23 0
+	add $14 $17 0
 	
 	jal apagarRastro
 	
@@ -637,7 +695,9 @@ andarPBaixoBoneco:
 	add $31 $0 $16
 	
 	# adiciona um bloco para baixo do boneco
-	addi $23 $23 512
+	addi $17 $17 512
+	
+	sw $17 0($23)
 	
 	# chama a função de desenhar boneco com o endereço novo
 	jal desenharBoneco
@@ -657,7 +717,7 @@ andarPBaixoBoneco:
 	bne $15 $0 andarPBaixoBoneco
 	
 	pularCodigoAndarBaixoBoneco:
-		jr $31
+		j testarVolta
 
 
 andarPCima:
@@ -736,19 +796,24 @@ andarPCima:
 
 
 andarPCimaBoneco:
+
+	lui $23 0x1002
+	
+	lw $17 0($23)
+
 	# guardar endereço
 	add $16 $0 $31
 	
 	li $20, 0xFF6600FF
  	
  	# pega o endereço de cima do bloco atual do boneco
-	lw $21 -512($23)
+	lw $21 -512($17)
 
 	# se o bloco de baixo for da cor da borda, ele pula o codigo
 	beq $20 $21 pularCodigoAndarCimaBoneco
 	
 	# pega o endereço de cima do bloco atual do boneco
-	lw $21 -484($23)
+	lw $21 -484($17)
 
 	# se o bloco de baixo for da cor da borda, ele pula o codigo
 	beq $20 $21 pularCodigoAndarCimaBoneco
@@ -758,7 +823,7 @@ andarPCimaBoneco:
 	# cor da bomba
 	li $20, 0x000000
 	
-	addi $22 $23 -512
+	addi $22 $17 -512
 	
 	
 	loopColisaoBombaPCimaBoneco:
@@ -775,7 +840,7 @@ andarPCimaBoneco:
 	
 	
 	# o bloco anterior ao que o boneco está atualmente, serve para apagar o boneco
-	add $14 $23 0
+	add $14 $17 0
 	
 	jal apagarRastro
 	
@@ -783,7 +848,9 @@ andarPCimaBoneco:
 	add $31 $0 $16
 	
 	# adiciona um bloco para cima do boneco
-	addi $23 $23 -512
+	addi $17 $17 -512
+	
+	sw $17 0($23) 
 	
 	# chama a função de desenhar boneco com o endereço novo
 	jal desenharBoneco
@@ -804,7 +871,7 @@ andarPCimaBoneco:
 	
 	pularCodigoAndarCimaBoneco:
 
-		jr $31
+		j testarVolta
 
 
 apagarRastro:
@@ -846,72 +913,72 @@ apagarRastro:
 	jr $31
 	
 desenharBoneco:
+ 	lw $17 0($23)
  	
 	# preto boneco
 	lui $9, 0x0000
 	ori $9, $9, 0x0000
-	sw $9, 8($23)
-	sw $9, 12($23)
-	sw $9, 16($23)
-	sw $9, 20($23)
-	sw $9, 520($23)
-	sw $9, 1036($23)
-	sw $9, 1044($23)
+	sw $9, 8($17)
+	sw $9, 12($17)
+	sw $9, 16($17)
+	sw $9, 20($17)
+	sw $9, 520($17)
+	sw $9, 1036($17)
+	sw $9, 1044($17)
 	
 	# pele boneco
 	li $9 0xf5cbbe
 	
-	sw $9, 516($23)
-	sw $9, 524($23)
-	sw $9, 528($23)
-	sw $9, 532($23)
-	sw $9, 1028($23)
-	sw $9, 1032($23)
-	sw $9, 1040($23)
+	sw $9, 516($17)
+	sw $9, 524($17)
+	sw $9, 528($17)
+	sw $9, 532($17)
+	sw $9, 1028($17)
+	sw $9, 1032($17)
+	sw $9, 1040($17)
 	
-	sw $9, 1544($23)
-	sw $9, 1548($23)
-	sw $9, 1552($23)
-	sw $9, 1556($23)
+	sw $9, 1544($17)
+	sw $9, 1548($17)
+	sw $9, 1552($17)
+	sw $9, 1556($17)
 	
-	sw $9, 2048($23)
-	sw $9, 2076($23)
-	sw $9, 2560($23)
-	sw $9, 2588($23)
+	sw $9, 2048($17)
+	sw $9, 2076($17)
+	sw $9, 2560($17)
+	sw $9, 2588($17)
 	
 	# camisa boneco
 	li $9 0xBF0101
-	sw $9, 2052($23)
-	sw $9, 2056($23)
-	sw $9, 2060($23)
-	sw $9, 2064($23)
-	sw $9, 2068($23)
-	sw $9, 2072($23)
+	sw $9, 2052($17)
+	sw $9, 2056($17)
+	sw $9, 2060($17)
+	sw $9, 2064($17)
+	sw $9, 2068($17)
+	sw $9, 2072($17)
 	
-	sw $9, 2564($23)
-	sw $9, 2568($23)
-	sw $9, 2572($23)
-	sw $9, 2576($23)
-	sw $9, 2580($23)
-	sw $9, 2584($23)
+	sw $9, 2564($17)
+	sw $9, 2568($17)
+	sw $9, 2572($17)
+	sw $9, 2576($17)
+	sw $9, 2580($17)
+	sw $9, 2584($17)
 	
-	sw $9, 3588($23)
-	sw $9, 3592($23)
-	sw $9, 3604($23)
-	sw $9, 3608($23)
+	sw $9, 3588($17)
+	sw $9, 3592($17)
+	sw $9, 3604($17)
+	sw $9, 3608($17)
 	
 	# branco boneco
 	li $9 0xffffff
-	sw $9, 3080($23)
-	sw $9, 3092($23)
+	sw $9, 3080($17)
+	sw $9, 3092($17)
 
 	
 	jr $31
 
 	
 desenharPersonagem: 	
-	# preto boneco
-	add $24 $8 $0
+	
 	lui $9, 0x0000
 	ori $9, $9, 0x0000
 	sw $9, 8($8)
