@@ -5,6 +5,9 @@ main:
 	
 	addi $8 $8 20544
 	
+	lui $25 0x1002
+	sw $8 0($25)
+	
 	addi $10 $0 15
 	
 	loopVerticalG:
@@ -156,3 +159,189 @@ main:
 	 		j loopVerticalE
 	 		
 	 sairloopVerticalE:
+	 	addi $13 $8 0
+		addi $8 $12 32 
+		addi $10 $0 16
+		loopHorirzontalECima:
+			beq $10 $0 sairloopHorirzontalECima
+	 		sw $9 0($8)
+	 		addi $8 $8 4
+	 		addi $10 $10 -1
+	 		j loopHorirzontalECima
+	
+	sairloopHorirzontalECima:
+		addi $8 $12 4128
+		addi $10 $0 16
+		loopHorirzontalEMeio:
+			beq $10 $0 sairloopHorirzontalEMeio
+	 		sw $9 0($8)
+	 		addi $8 $8 4
+	 		addi $10 $10 -1
+	 		j loopHorirzontalEMeio
+	 		
+	 sairloopHorirzontalEMeio:
+		addi $8 $13 0
+		addi $10 $0 16
+		loopHorirzontalEBaixo:
+			beq $10 $0 sairloopHorirzontalEBaixo
+	 		sw $9 0($8)
+	 		addi $8 $8 4
+	 		addi $10 $10 -1
+	 		j loopHorirzontalEBaixo
+	 		
+	 sairloopHorirzontalEBaixo:
+	 
+	# comeã Over
+		lw $8 0($25)
+		addi $8 $8 12288
+		sw $8 4($25)
+		addi $10 $0 16
+		loopVerticalOEsquerdo:
+			beq $10 $0 sairloopVerticalOEsquerdo
+	 		sw $9 0($8)
+	 		addi $8 $8 512
+	 		addi $10 $10 -1
+	 		j loopVerticalOEsquerdo	
+	 
+	 sairloopVerticalOEsquerdo:
+		addi $10 $0 16
+		loopHorirzontalOCima:
+			beq $10 $0 sairloopHorirzontalOCima
+	 		sw $9 0($8)
+	 		addi $8 $8 4
+	 		addi $10 $10 -1
+	 		j loopHorirzontalOCima		 
+	 	
+	 sairloopHorirzontalOCima:
+		addi $10 $0 16
+		loopHorirzontalOBaixo:
+			beq $10 $0 sairloopHorirzontalOBaixo
+	 		sw $9 0($8)
+	 		addi $8 $8 -512
+	 		addi $10 $10 -1
+	 		j loopHorirzontalOBaixo		 
+	 	
+	 sairloopHorirzontalOBaixo:
+		addi $10 $0 16
+		loopHorizontalOCima:
+			beq $10 $0 sairloopHorizontalOCima
+	 		sw $9 0($8)
+	 		addi $8 $8 -4
+	 		addi $10 $10 -1
+	 		j loopHorizontalOCima
+	 		
+	 sairloopHorizontalOCima:
+	 	lw $8 4($25)
+	 	addi $8 $8 96
+		addi $10 $0 16
+		loopVerticalVCima:
+			beq $10 $0 sairloopVerticalVCima
+	 		sw $9 0($8)
+	 		addi $8 $8 512
+	 		addi $10 $10 -1
+	 		j loopVerticalVCima
+	 		
+	 sairloopVerticalVCima:
+	 	 
+		addi $10 $0 16
+		loopVerticalVDireita:
+			beq $10 $0 sairloopVerticalVDireita
+	 		sw $9 0($8)
+	 		addi $8 $8 -508
+	 		addi $10 $10 -1
+	 		j loopVerticalVDireita
+	 		
+	 sairloopVerticalVDireita:
+
+	 	addi $8 $8 28
+		addi $10 $0 16
+		loopVerticalEOver:
+			beq $10 $0 sairloopVerticalEOver
+	 		sw $9 0($8)
+	 		addi $8 $8 512
+	 		addi $10 $10 -1
+	 		j loopVerticalEOver
+	 		
+	 sairloopVerticalEOver:
+	 	sw $8 8($25)
+		addi $10 $0 16
+		loopHorizontalEOverBaixo:
+			beq $10 $0 sairloopHorizontalEOverBaixo
+	 		sw $9 0($8)
+	 		addi $8 $8 4
+	 		addi $10 $10 -1
+	 		j loopHorizontalEOverBaixo
+	 		
+	 sairloopHorizontalEOverBaixo:
+	 	lw $8 8($25)
+	 	addi $8 $8 -4096
+		addi $10 $0 16
+		loopHorizontalEOverMeio:
+			beq $10 $0 sairloopHorizontalEOverMeio
+	 		sw $9 0($8)
+	 		addi $8 $8 4
+	 		addi $10 $10 -1
+	 		j loopHorizontalEOverMeio
+	 		
+	 sairloopHorizontalEOverMeio:
+	 	lw $8 8($25)
+	 	addi $8 $8 -8192
+		addi $10 $0 16
+		loopHorizontalEOverCima:
+			beq $10 $0 sairloopHorizontalEOverCima
+	 		sw $9 0($8)
+	 		addi $8 $8 4
+	 		addi $10 $10 -1
+	 		j loopHorizontalEOverCima
+	 		
+	 sairloopHorizontalEOverCima:
+	 	
+	 	addi $8 $8 32
+		sw $8 12($25)
+		addi $10 $0 18
+		loopVerticalROver:
+			beq $10 $0 sairloopVerticalROver
+	 		sw $9 0($8)
+	 		addi $8 $8 512
+	 		addi $10 $10 -1
+	 		j loopVerticalROver
+	 		
+	 sairloopVerticalROver:
+	 	
+		lw $8 12($25)
+		addi $10 $0 10
+		loopHorizontalROver:
+			beq $10 $0 sairloopHorizontalROver
+	 		sw $9 0($8)
+	 		addi $8 $8 4
+	 		addi $10 $10 -1
+	 		j loopHorizontalROver
+	 		
+	 sairloopHorizontalROver:
+		addi $10 $0 8
+		loopVerticalROverDireita:
+			beq $10 $0 sairloopVerticalROverDireita
+	 		sw $9 0($8)
+	 		addi $8 $8 512
+	 		addi $10 $10 -1
+	 		j loopVerticalROverDireita
+	 		
+	 sairloopVerticalROverDireita:
+		addi $10 $0 10
+		loopHorizontalROverVolta:
+			beq $10 $0 sairloopHorizontalROverVolta
+	 		sw $9 0($8)
+	 		addi $8 $8 -4
+	 		addi $10 $10 -1
+	 		j loopHorizontalROverVolta
+	 			 
+	 sairloopHorizontalROverVolta:
+		addi $10 $0 10
+		loopTortoROver:
+			beq $10 $0 sairloopTortoROver
+	 		sw $9 0($8)
+	 		addi $8 $8 516
+	 		addi $10 $10 -1
+	 		j loopTortoROver
+	 		
+	 sairloopTortoROver:
