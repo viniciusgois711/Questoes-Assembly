@@ -151,8 +151,6 @@ enderecosIniciais:
 	
 	add $10 $8 $0	
 	
-	lui $23, 0x1002
-	sw $8 8($23)
 	
 	# endereço inicial boneco
 	lui $8 0x1001
@@ -177,12 +175,13 @@ principal:
 
 	add $8 $10 $0
 	
-	lw $17 8($23)
 	jal desenharPersonagem
 	
 	jal teclado
 
 voltaTeclado:
+	
+	voltaApagarExplosao:
 	
 	lw $17 4($23)
 	
@@ -191,6 +190,8 @@ voltaTeclado:
 	lw $17 0($23)
 	# chama função de desenhar o boneco
 	jal desenharBoneco
+	
+	
 	
 	addi $15 $0 1
 	
@@ -204,14 +205,15 @@ voltaTeclado:
 	beq $4 $17 andarPBaixoBoneco
 	
 	
+	
 	testarVolta:
-		
-
 		lw $17 4($23)
 		addi $17 $17 -1
 		sw $17 4($23)	
-	
-		j principal
+		
+		#lw $17 24($23)
+		#beq $17 $0 principal
+		#j sair
 	
 	reiniciaTimer:
 		li $5 4
@@ -220,6 +222,7 @@ voltaTeclado:
 		addi $4 $4 1
 		addi $17 $0 20
 		sw $17 4($23)
+		
 		j principal
 
 
@@ -978,7 +981,8 @@ desenharBoneco:
 
 	
 desenharPersonagem: 	
-	
+	# preto boneco
+	add $24 $8 $0
 	lui $9, 0x0000
 	ori $9, $9, 0x0000
 	sw $9, 8($8)
@@ -1041,6 +1045,9 @@ desenharPersonagem:
 
 desenharBomba:
 	
+	lui $23 0x1002
+	sw $31 8($23)
+	
 	li $20, 0xFF6600FF
 	
 	lw $21, -32($8)
@@ -1053,7 +1060,14 @@ desenharBomba:
 	
 	addi $22 $8 -32
 	
-	addi $17 $22 0
+	lui $23 0x1002
+	
+	#endereço da bomba
+	sw $22 12($23)
+	
+	#se existe bomba
+	add $17 $0 1
+	sw $17 16($23)
 	
 	# laranja pavil
 	li $9 0xFFA500
@@ -1095,18 +1109,49 @@ desenharBomba:
 	sw $9 3084($22)
 	sw $9 3088($22)
 	
-	j desenharExplosao
+	jal timer
+	jal timer
+	jal timer
+	jal timer
+	
+	
+	jal desenharExplosao
+	
+	jal timer
+	jal timer
+	jal timer
+	jal timer
+	
+	jal apagarExplosao
 	
 	pularDesenharBomba:
+		lw $31 8($23)
 		jr $31
 
 desenharExplosao:
+	lw $17 12($23)
 	addi $19 $0 24
 	addi $18 $17 -32
-	# laranja
-	li $9 0xFF5733
-	
+		
+
+		
 	loopExplosaoHorizontal:
+	li $9 0xBF0101
+		
+	addi $11 $18 0
+		
+	#contador
+	addi $12 $0 8
+	loopColisaoWin:
+		beq $12 $0 sairLoopColisaoWin
+		lw $17 0($11)
+		beq $9 $17 sair
+		addi $11 $11 512
+		addi $12 $12 -1
+		j loopColisaoWin
+	sairLoopColisaoWin:	
+	 	# laranja
+		li $9 0xFF5733
 		beq $19 $0 inicializadorVertical
 		sw $9, 0($18)       # 1
 		sw $9, 512($18)     # 2
@@ -1116,16 +1161,38 @@ desenharExplosao:
 		sw $9, 2560($18)    # 6
 		sw $9, 3072($18)    # 7
 		sw $9, 3584($18)    # 8
+
 		
 		addi $18 $18 4
 		addi $19 $19 -1
+		
 		j loopExplosaoHorizontal
 		
 	inicializadorVertical:
+		lw $17 12($23)
 		addi $18 $17 -4096
 		addi $19 $0 24
+		
 	
 	loopExplosaoVertical:
+	
+		li $9 0xBF0101
+		
+		addi $11 $18 0
+		
+		#contador
+		addi $12 $0 8
+		loopColisaoWin2:
+			beq $12 $0 sairLoopColisaoWin2
+			lw $17 0($11)
+			beq $9 $17 sair
+			addi $11 $11 4
+			addi $12 $12 -1
+			j loopColisaoWin2	
+		
+		sairLoopColisaoWin2:
+	 	# laranja
+		li $9 0xFF5733
 		beq $19 $0 sairLoopExplosao
 		sw $9, 0($18)       # 1
 		sw $9, 4($18)     # 2
@@ -1136,19 +1203,21 @@ desenharExplosao:
 		sw $9, 24($18)    # 7
 		sw $9, 28($18)    # 8
 		
+		
+		
 		addi $18 $18 512
 		addi $19 $19 -1
+		
 		j loopExplosaoVertical
-		
-		
-		
 		
 	sairLoopExplosao:
 		addi $19 $0 2
 		addi $24 $0 1
 		addi $14 $18 -4096
 		addi $18 $0 1
-		j apagarExplosao
+		
+		
+		sw $17 16($23)
 		jr $31
 
 
@@ -1205,7 +1274,8 @@ apagarExplosao:
 		j apagarExplosao
 
 	sairGeralExplosao:
-		jr $31
+		
+		j voltaApagarExplosao
 
 timer: 
 	sw $16, 0($29)
