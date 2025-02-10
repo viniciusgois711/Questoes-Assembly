@@ -162,6 +162,10 @@ enderecosIniciais:
 	addi $17 $0 20
 	sw $17 4($23)	
 	
+	# contador bomba
+	addi $17 $0 70
+	sw $17 36($23)
+	
 	li $5 4
 	li $2 42
 	syscall	
@@ -177,11 +181,13 @@ principal:
 
 voltaTeclado:
 	
-	voltaApagarExplosao:
-	
 	lw $17 4($23)
 	
 	beq $17 $0 reiniciaTimer
+	
+	lw $17 36($23)
+	
+	beq $17 $0 esturaBomba
 
 	lw $17 0($23)
 	# chama função de desenhar o boneco
@@ -204,6 +210,26 @@ voltaTeclado:
 		lw $17 4($23)
 		addi $17 $17 -1
 		sw $17 4($23)
+		
+		lw $17 36($23)
+		addi $17 $17 -1
+		sw $17 36($23)
+		
+		j principal
+	
+	esturaBomba:
+		lw $17 32($23)
+		addi $20 $0 1
+		beq $17 $20 desenharExplosao
+		voltaDesenharExplosao:
+		#addi $19 $0 2
+		#addi $24 $0 1
+		#addi $18 $0 1
+		#lw $14 40($23)
+		#jal apagarExplosao
+		addi $17 $0 70
+		sw $17 36($23)
+		
 		j principal
 	
 	reiniciaTimer:
@@ -1035,6 +1061,8 @@ desenharPersonagem:
 
 
 desenharBomba:
+	addi $17 $0 70
+	sw $17 36($23)
 	
 	lui $23 0x1002
 	sw $31 8($23)
@@ -1058,7 +1086,7 @@ desenharBomba:
 	
 	#se existe bomba
 	add $17 $0 1
-	sw $17 16($23)
+	sw $17 32($23)
 	
 	# laranja pavil
 	li $9 0xFFA500
@@ -1100,20 +1128,20 @@ desenharBomba:
 	sw $9 3084($22)
 	sw $9 3088($22)
 	
-	jal timer
-	jal timer
-	jal timer
-	jal timer
+	#jal timer
+	#jal timer
+	#jal timer
+	#jal timer
 	
 	
-	jal desenharExplosao
+	#jal desenharExplosao
 	
-	jal timer
-	jal timer
-	jal timer
-	jal timer
+	#jal timer
+	#jal timer
+	#jal timer
+	#jal timer
 	
-	jal apagarExplosao
+	#jal apagarExplosao
 	
 	pularDesenharBomba:
 		lw $31 8($23)
@@ -1123,9 +1151,7 @@ desenharExplosao:
 	lw $17 12($23)
 	addi $19 $0 24
 	addi $18 $17 -32
-		
-
-		
+	
 	loopExplosaoHorizontal:
 	li $9 0xBF0101
 		
@@ -1207,13 +1233,16 @@ desenharExplosao:
 		addi $14 $18 -4096
 		addi $18 $0 1
 		
+		#sw $14 40($23)
 		
-		sw $17 16($23)
-		jr $31
-
+		jal timer
+		jal timer
+		jal timer
+		jal timer
+		jal timer
+		
 
 apagarExplosao:
-
 	# quantidade de bloquinhos na vertical,
 	addi $11 $0 8
 	laco_apagar_bomba_1:
@@ -1261,12 +1290,12 @@ apagarExplosao:
 		beq $18 $0 sairGeralExplosao
 		addi $18 $18 -1
 		addi $14 $14 -4160
-
 		j apagarExplosao
 
 	sairGeralExplosao:
-		
-		j voltaApagarExplosao
+		addi $17 $0 0
+		sw $17 32($23)
+		j voltaDesenharExplosao
 
 timer: 
 	sw $16, 0($29)
